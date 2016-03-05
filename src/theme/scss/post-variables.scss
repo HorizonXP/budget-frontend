@@ -1,0 +1,45 @@
+// Breakpoints
+//
+
+$grid-float-breakpoint:     $screen-md-min;
+
+
+// Lead
+$lead-font-size:      floor(($font-size-base * 1.15));
+$lead-font-size-sm:   floor(($font-size-base * 1.5));
+
+
+// Buttons
+//
+// Overrides and custom.
+
+// Custom
+$btn-font-size:      $font-size-base;
+
+
+// Icon nav
+//
+// Custom variables. Built for the icon nav example.
+
+$hr-divider-content-bg:     $body-bg;
+
+$custom-select-color:       $input-color;
+$custom-select-bg:          $input-bg;
+$custom-select-disabled-bg: $input-bg-disabled;
+
+$custom-control-indicator-bg:     $input-bg;
+
+$custom-control-indicator-disabled-bg:     darken($input-bg, 5%);
+
+$sidebar-brand-color:          $gray;
+$sidebar-brand-hover-color:    $gray-dark;
+$sidebar-toggler-color:        #ccc;
+$sidebar-toggler-hover-color:  #fff;
+
+$dashhead-toolbar-divider-bg: #eee;
+$dashhead-subtitle-color: $nav-header-color;
+
+$well-border: rgba(0,0,0,.1);
+
+$nav-pills-active-weight: 500;
+$navbar-nav-active-font-weight: 500;

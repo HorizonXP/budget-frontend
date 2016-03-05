@@ -1,9 +1,12 @@
 ---
 # Output debugging info
-# loglevel: debug
+loglevel: debug
+debug: true
 
 # Major version of Bootstrap: 3 or 4
 bootstrapVersion: 3
+
+useCustomIconFontPath: true
 
 # Webpack loaders, order matters
 styleLoaders:
@@ -25,14 +28,14 @@ env:
 
 # Customize Bootstrap variables that get imported before the original Bootstrap variables.
 # Thus original Bootstrap variables can depend on values from here.
-# preBootstrapCustomizations: ./src/common/theme/scss/_variables.scss
+preBootstrapCustomizations: ./src/theme/scss/dashboard.scss
 
 # This gets loaded after bootstrap/variables is loaded
 # So you can refer to bootstrap variables
-# bootstrapCustomizations: ./src/theme/scss/post_variables.scss
+bootstrapCustomizations: ./src/theme/scss/post-variables.scss
 
 # With CSS Modules we load all application styles directly in React components
-# appStyles: ./src/common/theme/scss/theme.scss
+appStyles: ./src/theme/scss/components.scss
 
 ### Bootstrap styles
 styles:

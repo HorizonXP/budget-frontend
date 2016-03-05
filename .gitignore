@@ -34,3 +34,4 @@ node_modules
 
 .*.sw?
 /static
+.DS_Store
