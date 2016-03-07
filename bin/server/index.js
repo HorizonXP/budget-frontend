@@ -1,5 +1,6 @@
 'use strict';
 require('babel-core/register');
+require('babel-polyfill');
 global.__CLIENT__ = false;
 global.__SERVER__ = true;
 global.__DISABLE_SSR__ = false;  // <----- DISABLES SERVER SIDE RENDERING FOR ERROR DEBUGGING
