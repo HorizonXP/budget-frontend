@@ -1,7 +1,7 @@
 ---
 # Output debugging info
-loglevel: debug
-debug: true
+# loglevel: debug
+# debug: true
 
 # Major version of Bootstrap: 3 or 4
 bootstrapVersion: 3
@@ -28,14 +28,14 @@ env:
 
 # Customize Bootstrap variables that get imported before the original Bootstrap variables.
 # Thus original Bootstrap variables can depend on values from here.
-preBootstrapCustomizations: ./src/theme/scss/dashboard.scss
+preBootstrapCustomizations: ./src/theme/scss/theme.scss
 
 # This gets loaded after bootstrap/variables is loaded
 # So you can refer to bootstrap variables
 bootstrapCustomizations: ./src/theme/scss/post-variables.scss
 
 # With CSS Modules we load all application styles directly in React components
-appStyles: ./src/theme/scss/components.scss
+appStyles: ./src/theme/scss/dashboard.scss
 
 ### Bootstrap styles
 styles:

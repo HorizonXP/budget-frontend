@@ -1,1 +1,14 @@
-@import './variables.scss';
+@import './components.scss';
+
+/* global body padding */
+body {
+  padding-top:    20px;
+  padding-bottom: 20px;
+}
+
+@media (min-width: 768px) {
+  body {
+    padding-top:    50px;
+    padding-bottom: 50px;
+  }
+}

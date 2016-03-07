@@ -26,7 +26,7 @@ export default class App extends React.Component {
 
   render() {
     return (
-      <div className="full-height">
+      <div>
         <Helmet
           title="Family Budget Dashboard"
           titleTemplate="Family Budget Dashboard - %s"
@@ -36,3 +36,4 @@ export default class App extends React.Component {
     );
   }
 }
+

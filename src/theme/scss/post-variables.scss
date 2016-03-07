@@ -43,3 +43,7 @@ $well-border: rgba(0,0,0,.1);
 
 $nav-pills-active-weight: 500;
 $navbar-nav-active-font-weight: 500;
+
+.form-control-feedback {
+  line-height: $input-height-base !important;
+}
