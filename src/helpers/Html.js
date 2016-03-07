@@ -25,7 +25,7 @@ export default class Html extends Component {
     const head = Helmet.rewind();
 
     return (
-      <html lang="en-us" className="full-height">
+      <html lang="en-us">
         <head>
           {head.base.toComponent()}
           {head.title.toComponent()}
@@ -48,8 +48,8 @@ export default class Html extends Component {
           {/* ideally one could also include here the style for the current page (Home.scss, About.scss, etc) */}
           {/* Object.keys(assets.styles).length === 0 ? <style dangerouslySetInnerHTML={{__html: require('../theme/bootstrap.config.js') + require('../containers/App/App.scss')._style}}/> : null */}
         </head>
-        <body className="full-height">
-          <div id="content" className="full-height" dangerouslySetInnerHTML={{__html: content}}/>
+        <body>
+          <div id="content" dangerouslySetInnerHTML={{__html: content}}/>
           <script dangerouslySetInnerHTML={{__html: `window.__data='${toJSON(store.getState())}';`}} charSet="UTF-8"/>
           {Object.keys(assets.javascript).map((script, i) =>
             <script src={assets.javascript[script]} key={i}/>

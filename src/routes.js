@@ -2,6 +2,10 @@ import React from 'react';
 import { Route, IndexRoute } from 'react-router';
 import { App, SignedIn, SignedOut, Login, Dashboard } from 'containers';
 import { isLoaded as isAuthLoaded, load as loadAuth } from 'redux/modules/user';
+import Sidebar from 'components/sidebar';
+import DashHead from 'components/dashhead';
+
+const Content = ({ children }) => children;
 
 export default store => {
   const requireAuth = (nextState, replace, cb) => {
@@ -26,7 +30,7 @@ export default store => {
         <Route path="/login" component={Login} />
       </Route>
       <Route component={SignedIn} onEnter={requireAuth}>
-        <Route path="/">
+        <Route path="/" components={{ dashhead: DashHead, sidebar: Sidebar, content: Content }}>
           <IndexRoute component={Dashboard} />
         </Route>
       </Route>

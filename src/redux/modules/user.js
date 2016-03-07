@@ -110,13 +110,13 @@ export function refresh(token) {
   ];
 }
 
-export function login(email, password, onSuccess, onFail) {
+export function login(username, password, callback) {
   return [
     loginUser(),
     bind(
       ApiClient.post('/v2/auth/login/', {
         data: {
-          email,
+          username,
           password
         }
       }),
@@ -124,14 +124,14 @@ export function login(email, password, onSuccess, onFail) {
         accessTokenCookie(value.token),
         () => bind(
           loginUserSuccess(value),
-          () => onSuccess(value)
+          () => typeof callback === 'function' ? callback(Promise.resolve(value)) : null
         )
       ),
       ({ value }) => bind(
         accessTokenCookie(null),
         () => bind(
           loginUserFailure(value),
-          () => onFail(value)
+          () => typeof callback === 'function' ? callback(Promise.reject(value)) : null
         )
       )
     )
@@ -178,7 +178,7 @@ export const INITIAL_STATE = new Map({
   refreshingToken: false,
   updatingUserProfile: false,
 
-  email: null,
+  username: null,
   userID: null,
   firstName: null,
   lastName: null,
@@ -187,33 +187,6 @@ export const INITIAL_STATE = new Map({
     token: null,
     exp: null,
     orig_iat: null,
-  }),
-
-  employee: new Map({
-    id: null,
-    title: null,
-    user: null,
-    organization: new Map({
-      id: null,
-      name: null,
-      logo: new Map({
-        url: null,
-        width: null,
-        height: null
-      })
-    }),
-    defaults: new Map({
-      site: new Map({
-        id: null,
-        name: null,
-        slug: null,
-      }),
-      building: new Map({
-        id: null,
-        name: null,
-        slug: null,
-      }),
-    })
   }),
 
   // errors
@@ -297,8 +270,8 @@ function setLastName(oldState, lastName) {
   return oldState.set('lastName', lastName);
 }
 
-function setEmail(oldState, email) {
-  return oldState.set('email', email);
+function setUsername(oldState, username) {
+  return oldState.set('username', username);
 }
 
 function setUserID(oldState, userID) {
@@ -314,30 +287,11 @@ function setTokenDetails(oldState, token, origIat, exp) {
   return oldState.set('token', tokenMap);
 }
 
-function setEmployee(oldState, id, organization, defaults, title, user) {
-  const employeeMap = new Map({
-    id,
-    organization,
-    defaults,
-    title,
-    user
-  });
-  return oldState.set('employee', employeeMap);
-}
-
-export function getEmployee(state) {
-  return state.get('employee');
-}
-
-export function getOrganization(state) {
-  return getEmployee(state).get('organization');
-}
-
 function populateUserFromJSON(oldState, userJson) {
-  const { first_name, last_name, email, id } = userJson;
+  const { first_name, last_name, username, id } = userJson;
   let newState = setFirstName(oldState, first_name);
   newState = setLastName(newState, last_name);
-  newState = setEmail(newState, email);
+  newState = setUsername(newState, username);
   newState = setUserID(newState, id);
   return newState;
 }
@@ -348,109 +302,16 @@ function populateTokenFromJSON(oldState, tokenJson) {
   return newState;
 }
 
-function createSiteMapFromJSON(siteJson) {
-  const {
-    id,
-    name,
-    slug
-  } = siteJson;
-  return new Map({
-    id,
-    name,
-    slug
-  });
-}
-
-function createBuildingMapFromJSON(buildingJson) {
-  const {
-    id,
-    name,
-    slug
-  } = buildingJson;
-  return new Map({
-    id,
-    name,
-    slug
-  });
-}
-
-function createOrganizationMapFromJSON(organizationJson) {
-  const {
-    id,
-    name,
-    logo
-  } = organizationJson;
-  return new Map({
-    id,
-    name,
-    logo: new Map(logo)
-  });
-}
-
-function createDefaultsMapFromJSON(defaultsJson) {
-  const {
-    site,
-    building
-  } = defaultsJson;
-  const siteMap = createSiteMapFromJSON(site);
-  const buildingMap = createBuildingMapFromJSON(building);
-  return new Map({
-    site: siteMap,
-    building: buildingMap
-  });
-}
-
-function populateEmployeeFromJSON(oldState, employeeJson) {
-  if (!employeeJson) return oldState;
-  const {
-    id,
-    organization,
-    defaults,
-    title,
-    user
-  } = employeeJson;
-  const organizationMap = createOrganizationMapFromJSON(organization);
-  const defaultsMap = createDefaultsMapFromJSON(defaults);
-  const newState = setEmployee(oldState, id, organizationMap, defaultsMap, title, user);
-  return newState;
-}
-
 function clearUserDetails(oldState) {
   let newState = setFirstName(oldState, null);
   newState = setLastName(newState, null);
-  newState = setEmail(newState, null);
+  newState = setUsername(newState, null);
   newState = setUserID(newState, null);
   return newState;
 }
 
 function clearToken(oldState) {
   const newState = setTokenDetails(oldState, null, null, null, null);
-  return newState;
-}
-
-function clearEmployee(oldState) {
-  const organizationMap = createOrganizationMapFromJSON({
-    id: null,
-    name: null,
-    logo: {
-      url: null,
-      width: null,
-      height: null
-    }
-  });
-  const defaultsMap = createDefaultsMapFromJSON({
-    site: {
-      id: null,
-      name: null,
-      slug: null
-    },
-    building: {
-      id: null,
-      name: null,
-      slug: null
-    }
-  });
-  const newState = setEmployee(oldState, null, organizationMap, defaultsMap, null, null);
   return newState;
 }
 
@@ -487,7 +348,7 @@ reducerMap[LOGIN] = state => {
 };
 
 reducerMap[LOGIN_SUCCESS] = (state, action) => {
-  const { user, employee, token } = action.payload;
+  const { user, token } = action.payload;
   const parsedToken = parseToken(token);
   let newState = setLoginError(state, null);
   newState = setLoggingInState(newState, false);
@@ -495,7 +356,6 @@ reducerMap[LOGIN_SUCCESS] = (state, action) => {
   newState = setLoadedState(newState, true);
   newState = populateUserFromJSON(newState, user);
   newState = populateTokenFromJSON(newState, parsedToken);
-  newState = populateEmployeeFromJSON(newState, employee);
   return newState;
 };
 
@@ -506,7 +366,6 @@ reducerMap[LOGIN_FAILURE] = (state, action) => {
   newState = setLoadedState(newState, false);
   newState = clearUserDetails(newState);
   newState = clearToken(newState);
-  newState = clearEmployee(newState);
   return newState;
 };
 
@@ -523,7 +382,6 @@ reducerMap[LOGOUT_SUCCESS] = state => {
   newState = setLoadedState(newState, false);
   newState = clearUserDetails(newState);
   newState = clearToken(newState);
-  newState = clearEmployee(newState);
   return newState;
 };
 
@@ -540,13 +398,12 @@ reducerMap[REFRESH_TOKEN] = state => {
 };
 
 reducerMap[REFRESH_TOKEN_SUCCESS] = (state, action) => {
-  const { user, employee, token } = action.payload;
+  const { user, token } = action.payload;
   const parsedToken = parseToken(token);
   let newState = setRefreshTokenError(state, null);
   newState = setRefreshingTokenState(newState, false);
   newState = populateUserFromJSON(newState, user);
   newState = populateTokenFromJSON(newState, parsedToken);
-  newState = populateEmployeeFromJSON(newState, employee);
   return newState;
 };
 

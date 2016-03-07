@@ -76,6 +76,7 @@
     "transit-immutable-js": "^0.5.4",
     "transit-js": "^0.8.846",
     "url-loader": "^0.5.7",
+    "validator": "^5.1.0",
     "webpack": "^1.12.14",
     "webpack-dev-middleware": "^1.5.1",
     "webpack-hot-middleware": "^2.9.1",
