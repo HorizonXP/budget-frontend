@@ -69,6 +69,68 @@ function getMonths(year) {
   return months;
 }
 
+function getYears(year) {
+  // Given a year, return an object
+  // that describes the years of the decade
+  const startDate = moment([year]);
+  const firstYear = Math.floor(year / 10) * 10;
+  let lastYear = Math.ceil(year / 10) * 10;
+  if (firstYear === lastYear) {
+    lastYear += 10;
+  }
+  const firstDay = moment(startDate).startOf('year').set('year', firstYear);
+  const lastDay = moment(startDate).endOf('year').set('year', lastYear);
+  const prevDecade = moment(firstDay).subtract(1, 'year');
+  const nextDecade = moment(lastDay).add(1, 'year');
+  const years = [];
+  const addYear = (date, old) => {
+    const label = date.format('YYYY');
+    const yearObj = {
+      date,
+      label,
+      year: years.length + 1,
+      old
+    };
+    years.push(yearObj);
+  };
+  for (let i = 0; i < firstDay.diff(prevDecade, 'years'); i++) {
+    addYear(moment(prevDecade).add(i, 'years'), true);
+  }
+  for (let i = 0; i < lastDay.diff(firstDay, 'years'); i++) {
+    addYear(
+      moment(firstDay).add(i, 'years'),
+      false
+    );
+  }
+  for (let i = 0; i < nextDecade.diff(lastDay, 'years'); i++) {
+    addYear(
+      moment(lastDay).add(i, 'years'),
+      true
+    );
+  }
+  return years;
+}
+
+function startOfDecade(date) {
+  const startDate = moment(date);
+  const year = startDate.year();
+  const firstYear = Math.floor(year / 10) * 10;
+  const firstDay = moment(startDate).startOf('year').set('year', firstYear);
+  return firstDay;
+}
+
+function endOfDecade(date) {
+  const startDate = moment(date);
+  const year = startDate.year();
+  const firstYear = Math.floor(year / 10) * 10;
+  let lastYear = Math.ceil(year / 10) * 10;
+  if (firstYear === lastYear) {
+    lastYear += 10;
+  }
+  const lastDay = moment(startDate).endOf('year').set('year', lastYear - 1);
+  return lastDay;
+}
+
 export default class DatePicker extends React.Component {
   static propTypes = {
     onFocus: React.PropTypes.func.isRequired,
@@ -159,6 +221,7 @@ export default class DatePicker extends React.Component {
       : this.state.value;
     const calendar = getCalendar(currentDate.get('year'), currentDate.get('month'));
     const months = getMonths(currentDate.get('year'));
+    const years = getYears(currentDate.get('year'));
     const setStateAndDate = (date, setAllowBlur, newViewMode) => {
       this.setState({
         allowBlur: !setAllowBlur,
@@ -173,11 +236,15 @@ export default class DatePicker extends React.Component {
     const prevMonth = () => setStateAndDate(moment(currentDate).subtract(1, 'month'), false);
     const nextYear = () => setStateAndDate(moment(currentDate).add(1, 'year'), false);
     const prevYear = () => setStateAndDate(moment(currentDate).subtract(1, 'year'), false);
+    const nextDecade = () => setStateAndDate(moment(currentDate).add(10, 'year'), false);
+    const prevDecade = () => setStateAndDate(moment(currentDate).subtract(10, 'year'), false);
     const next = () => {
       if (viewMode === 'calendar') {
         nextMonth();
       } else if (viewMode === 'month') {
         nextYear();
+      } else if (viewMode === 'year') {
+        nextDecade();
       }
     };
     const prev = () => {
@@ -185,9 +252,19 @@ export default class DatePicker extends React.Component {
         prevMonth();
       } else if (viewMode === 'month') {
         prevYear();
+      } else if (viewMode === 'year') {
+        prevDecade();
       }
     };
-    const switchViewMode = () => setStateAndDate(currentDate, true, 'month');
+    const switchViewMode = () => {
+      let newViewMode = viewMode;
+      if (viewMode === 'calendar') {
+        newViewMode = 'month';
+      } else if (viewMode === 'month') {
+        newViewMode = 'year';
+      }
+      setStateAndDate(currentDate, true, newViewMode);
+    };
     return (
       <span
         className="input-with-icon"
@@ -232,6 +309,9 @@ export default class DatePicker extends React.Component {
                     >
                       { viewMode === 'calendar' && currentDate.format('MMMM YYYY') }
                       { viewMode === 'month' && currentDate.format('YYYY') }
+                      { viewMode === 'year' &&
+                        `${startOfDecade(currentDate).year()}-${endOfDecade(currentDate).year()}`
+                      }
                     </th>
                     <th
                       className="next"
@@ -282,6 +362,30 @@ export default class DatePicker extends React.Component {
                             <span
                               key={key}
                               className={`month${activeCls}`}
+                              onClick={setActive}
+                            >
+                              {label}
+                            </span>
+                          );
+                        })}
+                      </td>
+                    </tr>
+                  }
+                  { viewMode === 'year' &&
+                    <tr>
+                      <td colSpan={7}>
+                        { years.map(year => {
+                          const { date, label, old } = year;
+                          const key = date.format('DD/MM/YYYY');
+                          const active = currentDate.isSame(date, 'year');
+                          const activeCls = active ? ' active' : '';
+                          const newDate = moment(currentDate).set('year', date.year());
+                          const setActive = () => setStateAndDate(newDate, true, 'month');
+                          const cls = old ? ' old' : '';
+                          return (
+                            <span
+                              key={key}
+                              className={`year${activeCls}${cls}`}
                               onClick={setActive}
                             >
                               {label}
