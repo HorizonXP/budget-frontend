@@ -17,6 +17,7 @@ export default class SignedIn extends React.Component {
           <Col sm={9}>
             <main role="main">
               {this.props.dashhead}
+              <hr className="m-t" />
               {this.props.content}
             </main>
           </Col>
