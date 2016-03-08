@@ -48,6 +48,27 @@ function getCalendar(year, month) {
   return weeks;
 }
 
+function getMonths(year) {
+  // Given a year, return an object
+  // that describes the months of that year
+  const startDate = moment([year]);
+  const firstDay = moment(startDate).startOf('year');
+  const lastDay = moment(startDate).add(1, 'year');
+  const months = [];
+  for (let i = 0; i < lastDay.diff(firstDay, 'months'); i++) {
+    const date = moment(firstDay).add(i, 'months');
+    const month = months.length + 1;
+    const label = date.format('MMM');
+    const monthObj = {
+      date,
+      label,
+      month
+    };
+    months.push(monthObj);
+  }
+  return months;
+}
+
 export default class DatePicker extends React.Component {
   static propTypes = {
     onFocus: React.PropTypes.func.isRequired,
@@ -55,8 +76,10 @@ export default class DatePicker extends React.Component {
     show: React.PropTypes.bool.isRequired,
     setStartDate: React.PropTypes.func.isRequired,
     setEndDate: React.PropTypes.func.isRequired,
+    setViewMode: React.PropTypes.func.isRequired,
     startDate: React.PropTypes.object.isRequired,
-    endDate: React.PropTypes.object.isRequired
+    endDate: React.PropTypes.object.isRequired,
+    viewMode: React.PropTypes.string.isRequired
   }
 
   state = {
@@ -123,6 +146,7 @@ export default class DatePicker extends React.Component {
       onFocus,
       show,
       startDate,
+      viewMode
     } = this.props;
     const css = require('./DatePicker.scss');
     const baseCls = 'datepicker datepicker-dropdown dropdown-menu'
@@ -134,15 +158,36 @@ export default class DatePicker extends React.Component {
       ? currentDateStr
       : this.state.value;
     const calendar = getCalendar(currentDate.get('year'), currentDate.get('month'));
-    const setStateAndDate = (date, setAllowBlur) => {
+    const months = getMonths(currentDate.get('year'));
+    const setStateAndDate = (date, setAllowBlur, newViewMode) => {
       this.setState({
         allowBlur: !setAllowBlur,
         value: date.format('DD/MM/YYYY')
       });
       this.props.setStartDate(date.toDate());
+      if (newViewMode !== undefined) {
+        this.props.setViewMode(newViewMode);
+      }
     };
     const nextMonth = () => setStateAndDate(moment(currentDate).add(1, 'month'), false);
     const prevMonth = () => setStateAndDate(moment(currentDate).subtract(1, 'month'), false);
+    const nextYear = () => setStateAndDate(moment(currentDate).add(1, 'year'), false);
+    const prevYear = () => setStateAndDate(moment(currentDate).subtract(1, 'year'), false);
+    const next = () => {
+      if (viewMode === 'calendar') {
+        nextMonth();
+      } else if (viewMode === 'month') {
+        nextYear();
+      }
+    };
+    const prev = () => {
+      if (viewMode === 'calendar') {
+        prevMonth();
+      } else if (viewMode === 'month') {
+        prevYear();
+      }
+    };
+    const switchViewMode = () => setStateAndDate(currentDate, true, 'month');
     return (
       <span
         className="input-with-icon"
@@ -176,27 +221,33 @@ export default class DatePicker extends React.Component {
                   <tr>
                     <th
                       className="prev"
-                      onClick={prevMonth}
+                      onClick={prev}
                     >
                       «
                     </th>
-                    <th colSpan={5} className="datepicker-switch">
-                      {currentDate.format('MMMM YYYY')}
+                    <th
+                      colSpan={5}
+                      className="datepicker-switch"
+                      onClick={switchViewMode}
+                    >
+                      { viewMode === 'calendar' && currentDate.format('MMMM YYYY') }
+                      { viewMode === 'month' && currentDate.format('YYYY') }
                     </th>
                     <th
                       className="next"
-                      onClick={nextMonth}
+                      onClick={next}
                     >
                       »
                     </th>
                   </tr>
-                  <tr>
-                    { moment.weekdaysMin().map(day => <th className="dow" key={day}>{day}</th>) }
-                  </tr>
+                  { viewMode === 'calendar' && <tr>
+                      { moment.weekdaysMin().map(day => <th className="dow" key={day}>{day}</th>) }
+                    </tr>
+                  }
                 </thead>
                 <tbody>
-                  { calendar.map(week =>
-                    <tr>
+                  { viewMode === 'calendar' && calendar.map(week =>
+                    <tr key={week[0].week}>
                       { week.map(day => {
                         const date = day.date;
                         const key = date.format('DD/MM/YYYY');
@@ -204,7 +255,7 @@ export default class DatePicker extends React.Component {
                         const active = currentDate.isSame(date, 'day');
                         const cls = day.old ? ' old' : '';
                         const activeCls = active ? ' active' : '';
-                        const setActive = () => setStateAndDate(date, day.old);
+                        const setActive = () => setStateAndDate(date, day.old, 'calendar');
                         return (
                           <td
                             className={`day${cls}${activeCls}`}
@@ -217,6 +268,29 @@ export default class DatePicker extends React.Component {
                       })}
                     </tr>
                   )}
+                  { viewMode === 'month' &&
+                    <tr>
+                      <td colSpan={7}>
+                        { months.map(month => {
+                          const { date, label } = month;
+                          const key = date.format('DD/MM/YYYY');
+                          const active = currentDate.isSame(date, 'month');
+                          const activeCls = active ? ' active' : '';
+                          const newDate = moment(currentDate).set('month', date.month());
+                          const setActive = () => setStateAndDate(newDate, true, 'calendar');
+                          return (
+                            <span
+                              key={key}
+                              className={`month${activeCls}`}
+                              onClick={setActive}
+                            >
+                              {label}
+                            </span>
+                          );
+                        })}
+                      </td>
+                    </tr>
+                  }
                 </tbody>
               </Table>
             </div>

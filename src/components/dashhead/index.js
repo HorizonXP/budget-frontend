@@ -12,7 +12,9 @@ import {
   setStartDate,
   getStartDate,
   setEndDate,
-  getEndDate
+  getEndDate,
+  setViewMode,
+  getViewMode
 } from 'redux/modules/datepicker';
 
 @connect(
@@ -25,7 +27,8 @@ import {
     show,
     hide,
     setStartDate,
-    setEndDate
+    setEndDate,
+    setViewMode
   }
 )
 export default class DashHeadComponent extends React.Component {
@@ -34,12 +37,14 @@ export default class DashHeadComponent extends React.Component {
     show: React.PropTypes.func.isRequired,
     hide: React.PropTypes.func.isRequired,
     setStartDate: React.PropTypes.func.isRequired,
-    setEndDate: React.PropTypes.func.isRequired
+    setEndDate: React.PropTypes.func.isRequired,
+    setViewMode: React.PropTypes.func.isRequired
   }
 
   render() {
     const startDate = getStartDate(this.props.datepicker);
     const endDate = getEndDate(this.props.datepicker);
+    const viewMode = getViewMode(this.props.datepicker);
     return (
       <DashHead>
         <DashHeadTitles>
@@ -56,6 +61,8 @@ export default class DashHeadComponent extends React.Component {
               setEndDate={this.props.setEndDate}
               startDate={startDate}
               endDate={endDate}
+              setViewMode={this.props.setViewMode}
+              viewMode={viewMode}
             />
           </ButtonToolbarItem>
         </ButtonToolbar>
