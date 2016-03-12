@@ -21,7 +21,52 @@ import {
   getTitle
 } from 'redux/modules/dashhead';
 
-@connect(
+const DashHeadComponent = ({
+  datepicker,
+  dashhead,
+  ...props
+}) => {
+  const startDate = getStartDate(datepicker);
+  const endDate = getEndDate(datepicker);
+  const viewMode = getViewMode(datepicker);
+  const title = getTitle(dashhead);
+  const group = getGroup(dashhead);
+  return (
+    <DashHead>
+      <DashHeadTitles>
+        <h1 className="h6 dashhead-subtitle">{group}</h1>
+        <h2 className="h2 dashhead-title">{title}</h2>
+      </DashHeadTitles>
+      <ButtonToolbar className="dashhead-toolbar">
+        <ButtonToolbarItem>
+          <DatePicker
+            onFocus={props.show}
+            onBlur={props.hide}
+            show={isShown(datepicker)}
+            setStartDate={props.setStartDate}
+            setEndDate={props.setEndDate}
+            startDate={startDate}
+            endDate={endDate}
+            setViewMode={props.setViewMode}
+            viewMode={viewMode}
+          />
+        </ButtonToolbarItem>
+      </ButtonToolbar>
+    </DashHead>
+  );
+};
+
+DashHeadComponent.propTypes = {
+  datepicker: React.PropTypes.object.isRequired,
+  dashhead: React.PropTypes.object.isRequired,
+  show: React.PropTypes.func.isRequired,
+  hide: React.PropTypes.func.isRequired,
+  setStartDate: React.PropTypes.func.isRequired,
+  setEndDate: React.PropTypes.func.isRequired,
+  setViewMode: React.PropTypes.func.isRequired
+};
+
+export default connect(
   state => (
     {
       datepicker: state.datepicker,
@@ -35,46 +80,4 @@ import {
     setEndDate,
     setViewMode
   }
-)
-export default class DashHeadComponent extends React.Component {
-  static propTypes = {
-    datepicker: React.PropTypes.object.isRequired,
-    dashhead: React.PropTypes.object.isRequired,
-    show: React.PropTypes.func.isRequired,
-    hide: React.PropTypes.func.isRequired,
-    setStartDate: React.PropTypes.func.isRequired,
-    setEndDate: React.PropTypes.func.isRequired,
-    setViewMode: React.PropTypes.func.isRequired
-  }
-
-  render() {
-    const startDate = getStartDate(this.props.datepicker);
-    const endDate = getEndDate(this.props.datepicker);
-    const viewMode = getViewMode(this.props.datepicker);
-    const title = getTitle(this.props.dashhead);
-    const group = getGroup(this.props.dashhead);
-    return (
-      <DashHead>
-        <DashHeadTitles>
-          <h1 className="h6 dashhead-subtitle">{group}</h1>
-          <h2 className="h2 dashhead-title">{title}</h2>
-        </DashHeadTitles>
-        <ButtonToolbar className="dashhead-toolbar">
-          <ButtonToolbarItem>
-            <DatePicker
-              onFocus={this.props.show}
-              onBlur={this.props.hide}
-              show={isShown(this.props.datepicker)}
-              setStartDate={this.props.setStartDate}
-              setEndDate={this.props.setEndDate}
-              startDate={startDate}
-              endDate={endDate}
-              setViewMode={this.props.setViewMode}
-              viewMode={viewMode}
-            />
-          </ButtonToolbarItem>
-        </ButtonToolbar>
-      </DashHead>
-    );
-  }
-}
+)(DashHeadComponent);

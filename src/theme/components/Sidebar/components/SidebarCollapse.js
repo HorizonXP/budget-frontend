@@ -1,21 +1,18 @@
 import React from 'react';
 import { Collapse } from 'react-bootstrap';
 
-export default class SidebarCollapse extends React.Component {
-  static propTypes = {
-    children: React.PropTypes.node.isRequired,
-    expanded: React.PropTypes.bool.isRequired,
-    toggleBreakpoint: React.PropTypes.string.isRequired
-  }
+const SidebarCollapse = ({ children, expanded, toggleBreakpoint }) => (
+  <Collapse in={expanded}>
+    <div className={`nav-toggleable-${toggleBreakpoint}`}>
+      {children}
+    </div>
+  </Collapse>
+);
 
-  render() {
-    const toggleCls = `nav-toggleable-${this.props.toggleBreakpoint}`;
-    return (
-      <Collapse in={this.props.expanded}>
-        <div className={`${toggleCls}`}>
-          {this.props.children}
-        </div>
-      </Collapse>
-    );
-  }
-}
+SidebarCollapse.propTypes = {
+  children: React.PropTypes.node.isRequired,
+  expanded: React.PropTypes.bool.isRequired,
+  toggleBreakpoint: React.PropTypes.string.isRequired
+};
+
+export default SidebarCollapse;

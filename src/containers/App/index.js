@@ -3,7 +3,25 @@ import Helmet from 'react-helmet';
 import { asyncConnect } from 'redux-async-connect';
 import { isLoaded as isAuthLoaded, load as loadAuth } from 'redux/modules/user.js';
 
-@asyncConnect([{
+const App = ({ children }) => (
+  <div>
+    <Helmet
+      title="Family Budget Dashboard"
+      titleTemplate="Family Budget Dashboard - %s"
+    />
+    {children}
+  </div>
+);
+
+App.propTypes = {
+  children: PropTypes.node
+};
+
+App.contextTypes = {
+  store: PropTypes.object
+};
+
+export default asyncConnect([{
   promise: ({ store: { dispatch, getState } }) => {
     const promises = [];
 
@@ -13,27 +31,4 @@ import { isLoaded as isAuthLoaded, load as loadAuth } from 'redux/modules/user.j
 
     return Promise.all(promises);
   }
-}])
-export default class App extends React.Component {
-  static propTypes = {
-    children: PropTypes.node,
-    store: PropTypes.object
-  }
-
-  static contextTypes = {
-    store: PropTypes.object
-  }
-
-  render() {
-    return (
-      <div>
-        <Helmet
-          title="Family Budget Dashboard"
-          titleTemplate="Family Budget Dashboard - %s"
-        />
-        {this.props.children}
-      </div>
-    );
-  }
-}
-
+}])(App);

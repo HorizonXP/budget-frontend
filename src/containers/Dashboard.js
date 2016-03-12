@@ -6,18 +6,13 @@ import {
   setTitle
 } from 'redux/modules/dashhead';
 
-@asyncConnect([{
+const Dashboard = () => <h1>Hey!</h1>;
+
+export default asyncConnect([{
   promise: ({ store }) => {
     const promises = [];
     promises.push(store.dispatch(setGroup('Dashboards')));
     promises.push(store.dispatch(setTitle('Overview')));
     return Promise.all(promises);
   }
-}])
-export default class Dashboard extends React.Component {
-  render() {
-    return (
-      <h1> Hey! </h1>
-    );
-  }
-}
+}])(Dashboard);
