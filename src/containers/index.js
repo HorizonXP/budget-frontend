@@ -1,13 +1,6 @@
-import App from './App';
-import Dashboard from './Dashboard';
-import Login from './Login';
-import SignedIn from './SignedIn';
-import SignedOut from './SignedOut';
-
-export default {
-  App,
-  SignedIn,
-  SignedOut,
-  Login,
-  Dashboard
-};
+export App from './App';
+export Dashboard from './Dashboard';
+export Login from './Login';
+export SignedIn from './SignedIn';
+export SignedOut from './SignedOut';
+export Taxes from './Taxes';

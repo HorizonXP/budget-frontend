@@ -1,6 +1,6 @@
 import React from 'react';
 import { Route, IndexRoute } from 'react-router';
-import { App, SignedIn, SignedOut, Login, Dashboard } from 'containers';
+import { App, SignedIn, SignedOut, Login, Dashboard, Taxes } from 'containers';
 import { isLoaded as isAuthLoaded, load as loadAuth } from 'redux/modules/user';
 import Sidebar from 'components/sidebar';
 import DashHead from 'components/dashhead';
@@ -32,6 +32,7 @@ export default store => {
       <Route component={SignedIn} onEnter={requireAuth}>
         <Route path="/" components={{ dashhead: DashHead, sidebar: Sidebar, content: Content }}>
           <IndexRoute component={Dashboard} />
+          <Route path="taxes" component={Taxes} />
         </Route>
       </Route>
     </Route>
