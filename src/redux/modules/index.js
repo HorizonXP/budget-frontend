@@ -4,6 +4,7 @@ import { combineReducers } from 'redux';
 import user from './user';
 import sidebar from './sidebar';
 import datepicker from './datepicker';
+import dashhead from './dashhead';
 import { reducer as form } from 'redux-form';
 
 export default combineReducers({
@@ -12,5 +13,6 @@ export default combineReducers({
   user,
   sidebar,
   datepicker,
+  dashhead,
   form
 });

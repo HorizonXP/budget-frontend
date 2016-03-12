@@ -16,11 +16,16 @@ import {
   setViewMode,
   getViewMode
 } from 'redux/modules/datepicker';
+import {
+  getGroup,
+  getTitle
+} from 'redux/modules/dashhead';
 
 @connect(
   state => (
     {
-      datepicker: state.datepicker
+      datepicker: state.datepicker,
+      dashhead: state.dashhead
     }
   ),
   {
@@ -34,6 +39,7 @@ import {
 export default class DashHeadComponent extends React.Component {
   static propTypes = {
     datepicker: React.PropTypes.object.isRequired,
+    dashhead: React.PropTypes.object.isRequired,
     show: React.PropTypes.func.isRequired,
     hide: React.PropTypes.func.isRequired,
     setStartDate: React.PropTypes.func.isRequired,
@@ -45,11 +51,13 @@ export default class DashHeadComponent extends React.Component {
     const startDate = getStartDate(this.props.datepicker);
     const endDate = getEndDate(this.props.datepicker);
     const viewMode = getViewMode(this.props.datepicker);
+    const title = getTitle(this.props.dashhead);
+    const group = getGroup(this.props.dashhead);
     return (
       <DashHead>
         <DashHeadTitles>
-          <h1 className="h6 dashhead-subtitle">Dashboards</h1>
-          <h2 className="h2 dashhead-title">Overview</h2>
+          <h1 className="h6 dashhead-subtitle">{group}</h1>
+          <h2 className="h2 dashhead-title">{title}</h2>
         </DashHeadTitles>
         <ButtonToolbar className="dashhead-toolbar">
           <ButtonToolbarItem>
