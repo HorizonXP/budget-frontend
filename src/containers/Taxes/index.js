@@ -1,6 +1,7 @@
 /* eslint react/prop-types: [2, { ignore: ["store"] }] */
 import React from 'react';
 import { asyncConnect } from 'redux-async-connect';
+import { connect } from 'react-redux';
 import { Row, Col, Tab } from 'react-bootstrap';
 import StatCard from 'theme/components/StatCard';
 import Divider from 'theme/components/Divider';
@@ -8,8 +9,12 @@ import {
   setGroup,
   setTitle
 } from 'redux/modules/dashhead';
+import {
+  setActiveTab,
+  getActiveTab
+} from 'redux/modules/taxes';
 
-const TaxesDashboard = () => (
+const TaxesDashboard = ({ taxes, ...props }) => (
   <Row>
     <Col xs={12}>
       <Row>
@@ -45,13 +50,21 @@ const TaxesDashboard = () => (
           />
         </Col>
       </Row>
-      <Divider defaultActiveKey={1}>
-        <Tab eventKey={1} title="Yours">Your income taxes</Tab>
-        <Tab eventKey={2} title="Spouse">Spouse's income taxes</Tab>
+      <Divider
+        activeKey={getActiveTab(taxes)}
+        onSelect={props.setActiveTab}
+      >
+        <Tab eventKey={'yours'} title="Yours">Your income taxes</Tab>
+        <Tab eventKey={'spouse'} title="Spouse">Spouse's income taxes</Tab>
       </Divider>
     </Col>
   </Row>
 );
+
+TaxesDashboard.propTypes = {
+  taxes: React.PropTypes.object.isRequired,
+  setActiveTab: React.PropTypes.func.isRequired
+};
 
 export default asyncConnect([{
   promise: ({ store }) => {
@@ -60,4 +73,14 @@ export default asyncConnect([{
     promises.push(store.dispatch(setTitle('Taxes')));
     return Promise.all(promises);
   }
-}])(TaxesDashboard);
+}])(
+connect(
+  state => (
+    {
+      taxes: state.taxes
+    }
+  ),
+  {
+    setActiveTab
+  }
+)(TaxesDashboard));

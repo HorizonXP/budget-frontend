@@ -5,6 +5,7 @@ import user from './user';
 import sidebar from './sidebar';
 import datepicker from './datepicker';
 import dashhead from './dashhead';
+import taxes from './taxes';
 import { reducer as form } from 'redux-form';
 
 export default combineReducers({
@@ -13,6 +14,7 @@ export default combineReducers({
   user,
   sidebar,
   datepicker,
+  taxes,
   dashhead,
   form
 });
