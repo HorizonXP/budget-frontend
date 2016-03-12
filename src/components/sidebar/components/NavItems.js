@@ -1,6 +1,6 @@
 import React from 'react';
 import { Nav, NavItem } from 'react-bootstrap';
-import { LinkContainer } from 'react-router-bootstrap';
+import { IndexLinkContainer, LinkContainer } from 'react-router-bootstrap';
 import NavDivider from 'theme/components/NavDivider';
 import NavHeader from 'theme/components/NavHeader';
 
@@ -9,9 +9,9 @@ export default class NavItems extends React.Component {
     return (
       <Nav {...this.props}>
         <NavHeader>Dashboards</NavHeader>
-        <LinkContainer to="/">
+        <IndexLinkContainer to="/">
           <NavItem>Overview</NavItem>
-        </LinkContainer>
+        </IndexLinkContainer>
         <LinkContainer to="/accounts">
           <NavItem>Accounts</NavItem>
         </LinkContainer>
