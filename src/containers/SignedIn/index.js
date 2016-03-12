@@ -10,7 +10,6 @@ const SignedIn = ({ sidebar, dashhead, content }) => (
       <Col sm={9}>
         <main role="main">
           {dashhead}
-          <hr className="m-t" />
           {content}
         </main>
       </Col>
