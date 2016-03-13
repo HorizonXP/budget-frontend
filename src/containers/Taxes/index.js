@@ -2,7 +2,7 @@
 import React from 'react';
 import { asyncConnect } from 'redux-async-connect';
 import { connect } from 'react-redux';
-import { Row, Col, Tab } from 'react-bootstrap';
+import { Row, Col, Tab, Panel, Input } from 'react-bootstrap';
 import StatCard from 'theme/components/StatCard';
 import Divider from 'theme/components/Divider';
 import {
@@ -10,11 +10,14 @@ import {
   setTitle
 } from 'redux/modules/dashhead';
 import {
-  setActiveTab,
-  getActiveTab
+  setActiveTab
 } from 'redux/modules/taxes';
 
-const TaxesDashboard = ({ taxes, ...props }) => (
+const TaxesDashboard = ({
+  taxes: { activeTab },
+  family: { members },
+  ...props
+}) => (
   <Row>
     <Col xs={12}>
       <Row>
@@ -51,11 +54,88 @@ const TaxesDashboard = ({ taxes, ...props }) => (
         </Col>
       </Row>
       <Divider
-        activeKey={getActiveTab(taxes)}
+        activeKey={activeTab}
         onSelect={props.setActiveTab}
+        className="m-b"
       >
-        <Tab eventKey={'yours'} title="Yours">Your income taxes</Tab>
-        <Tab eventKey={'spouse'} title="Spouse">Spouse's income taxes</Tab>
+        { members.map(member => (
+            <Tab eventKey={member.username} title={member.first_name}>
+              <Row>
+                <Col xs={12} md={6}>
+                  <Panel header="Income">
+                    <Input
+                      type="text"
+                      placeholder="Employment Income"
+                      label="Employment Income"
+                      labelClassName="sr-only"
+                      required
+                      autofocus
+                    />
+                    <Input
+                      type="text"
+                      placeholder="Eligible Dividends"
+                      label="Eligible Dividends"
+                      labelClassName="sr-only"
+                      required
+                      autofocus
+                    />
+                    <Input
+                      type="text"
+                      placeholder="Ineligible Dividends"
+                      label="Ineligible Dividends"
+                      labelClassName="sr-only"
+                      required
+                      autofocus
+                    />
+                    <Input
+                      type="text"
+                      placeholder="Capital Gains"
+                      label="Capital Gains"
+                      labelClassName="sr-only"
+                      required
+                      autofocus
+                    />
+                  </Panel>
+                </Col>
+                <Col xs={12} md={6}>
+                  <Panel header="Deductions">
+                    <Input
+                      type="text"
+                      placeholder="RRSP Contributions"
+                      label="RRSP Contributions"
+                      labelClassName="sr-only"
+                      required
+                      autofocus
+                    />
+                    <Input
+                      type="text"
+                      placeholder="Interest Expense"
+                      label="Interest Expense"
+                      labelClassName="sr-only"
+                      required
+                      autofocus
+                    />
+                    <Input
+                      type="text"
+                      placeholder="RPP Contributions"
+                      label="RPP Contributions"
+                      labelClassName="sr-only"
+                      required
+                      autofocus
+                    />
+                    <Input
+                      type="text"
+                      placeholder="Prior Capital Losses"
+                      label="Prior Capital Losses"
+                      labelClassName="sr-only"
+                      required
+                      autofocus
+                    />
+                  </Panel>
+                </Col>
+              </Row>
+            </Tab>
+          )).toJS() }
       </Divider>
     </Col>
   </Row>
@@ -63,6 +143,7 @@ const TaxesDashboard = ({ taxes, ...props }) => (
 
 TaxesDashboard.propTypes = {
   taxes: React.PropTypes.object.isRequired,
+  family: React.PropTypes.object.isRequired,
   setActiveTab: React.PropTypes.func.isRequired
 };
 
@@ -71,13 +152,18 @@ export default asyncConnect([{
     const promises = [];
     promises.push(store.dispatch(setGroup('Other')));
     promises.push(store.dispatch(setTitle('Taxes')));
+    if (store.getState().taxes.activeTab === null) {
+      const username = store.getState().user.username;
+      promises.push(store.dispatch(setActiveTab(username)));
+    }
     return Promise.all(promises);
   }
 }])(
 connect(
   state => (
     {
-      taxes: state.taxes
+      taxes: state.taxes,
+      family: state.family
     }
   ),
   {

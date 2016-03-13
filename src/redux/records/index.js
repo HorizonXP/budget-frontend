@@ -61,7 +61,7 @@ export const DatepickerState = new Record({
 }, 'DatepickerState');
 
 export const TaxesState = new Record({
-  activeTab: 'yours'
+  activeTab: null
 }, 'TaxesState');
 
 export const SidebarState = new Record({
