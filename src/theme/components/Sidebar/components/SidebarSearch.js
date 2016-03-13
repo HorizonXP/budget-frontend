@@ -11,6 +11,6 @@ const SidebarSearch = ({ onSubmit }) =>
   </form>;
 
 SidebarSearch.propTypes = {
-  onSubmit: React.PropTypes.func.isRequired
+  onSubmit: React.PropTypes.func
 };
 export default SidebarSearch;

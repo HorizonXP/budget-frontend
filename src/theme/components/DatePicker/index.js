@@ -140,7 +140,7 @@ export default class DatePicker extends React.Component {
     setEndDate: React.PropTypes.func.isRequired,
     setViewMode: React.PropTypes.func.isRequired,
     startDate: React.PropTypes.object.isRequired,
-    endDate: React.PropTypes.object.isRequired,
+    endDate: React.PropTypes.object,
     viewMode: React.PropTypes.string.isRequired
   }
 
