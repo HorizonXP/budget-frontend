@@ -5,7 +5,7 @@ import { logout } from 'redux/modules/user';
  */
 
 const FETCH = 'EFFECT_FETCH';
-const pattern = /\/api\/v2\/accounts\/current\//;
+const pattern = /\/api\/v1\/accounts\/current\//;
 
 export default ({ getState, dispatch }) => next => action => {
   const initialState = getState();

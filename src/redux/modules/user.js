@@ -70,7 +70,7 @@ function accessTokenCookie(token) {
 // action creator creators
 export function load(getFromCookie) {
   const fetchLoad = bind(
-    ApiClient.get('/v2/accounts/current/'),
+    ApiClient.get('/v1/accounts/current/'),
     ({ value }) => loadUserSuccess(value),
     ({ value }) => loadUserFailure(value)
   );
@@ -96,7 +96,7 @@ export function refresh(token) {
   return [
     refreshToken(),
     bind(
-      ApiClient.post('/v2/auth/refresh/', {
+      ApiClient.post('/v1/auth/refresh/', {
         data: {
           token
         }
@@ -114,7 +114,7 @@ export function login(username, password, callback) {
   return [
     loginUser(),
     bind(
-      ApiClient.post('/v2/auth/login/', {
+      ApiClient.post('/v1/auth/login/', {
         data: {
           username,
           password
@@ -152,7 +152,7 @@ export function submitUpdateUserProfile(values, onSuccess, onFail) {
   return [
     updateUserProfile(),
     bind(
-      ApiClient.put('/v2/accounts/current/', {
+      ApiClient.put('/v1/accounts/current/', {
         data: values
       }),
       ({ value }) => {
