@@ -4,6 +4,7 @@ import { handleActions, createAction } from 'redux-actions';
 import { bind } from 'redux-effects';
 import ApiClient from 'helpers/ApiClient';
 import { FamilyState, Member } from 'redux/records';
+import { LOGOUT_SUCCESS } from 'redux/modules/user';
 
 // action constants
 const LOAD = 'budget/family/LOAD';
@@ -57,5 +58,7 @@ reducerMap[LOAD_FAILURE] = (initialState, action) =>
     state.id = null;
     state.members = new Set();
   });
+
+reducerMap[LOGOUT_SUCCESS] = () => INITIAL_STATE;
 
 export default handleActions(reducerMap, INITIAL_STATE);

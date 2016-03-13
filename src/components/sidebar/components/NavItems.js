@@ -30,6 +30,13 @@ const NavItems = props => (
     <LinkContainer to="/taxes">
       <NavItem>Taxes</NavItem>
     </LinkContainer>
+    <NavDivider />
+    <LinkContainer to="/settings">
+      <NavItem>Settings</NavItem>
+    </LinkContainer>
+    <LinkContainer to="/logout">
+      <NavItem>Logout</NavItem>
+    </LinkContainer>
     <hr className="visible-xs m-t" />
   </Nav>
 );

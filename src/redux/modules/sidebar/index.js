@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { handleActions, createAction } from 'redux-actions';
 import { SidebarState } from 'redux/records';
+import { LOGOUT_SUCCESS } from 'redux/modules/user';
 
 // action constants
 const SHOW = 'bootstrap/themes/sidebar/SHOW';
@@ -30,6 +31,8 @@ reducerMap[TOGGLE] = initialState =>
   initialState.withMutations(state => {
     state.collapsed = !state.collapsed;
   });
+
+reducerMap[LOGOUT_SUCCESS] = () => INITIAL_STATE;
 
 export default handleActions(reducerMap, INITIAL_STATE);
 

@@ -13,7 +13,7 @@ const LOAD_SUCCESS = 'budget/user/LOAD_SUCCESS';
 const LOAD_FAILURE = 'budget/user/LOAD_FAILURE';
 
 const LOGIN = 'budget/user/LOGIN';
-const LOGIN_SUCCESS = 'budget/user/LOGIN_SUCCESS';
+export const LOGIN_SUCCESS = 'budget/user/LOGIN_SUCCESS';
 const LOGIN_FAILURE = 'budget/user/LOGIN_FAILURE';
 
 const LOGOUT = 'budget/user/LOGOUT';

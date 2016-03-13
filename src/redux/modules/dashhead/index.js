@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { handleActions, createAction } from 'redux-actions';
 import { DashHeadState } from 'redux/records';
+import { LOGOUT_SUCCESS } from 'redux/modules/user';
 
 // action constants
 const SET_TITLE = 'bootstrap/themes/dashhead/SET_TITLE';
@@ -23,6 +24,8 @@ reducerMap[SET_TITLE] = (initialState, action) =>
   initialState.withMutations(state => {
     state.title = action.payload;
   });
+
+reducerMap[LOGOUT_SUCCESS] = () => INITIAL_STATE;
 
 export default handleActions(reducerMap, INITIAL_STATE);
 

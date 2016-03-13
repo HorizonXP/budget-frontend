@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { handleActions, createAction } from 'redux-actions';
 import { DatepickerState } from 'redux/records';
+import { LOGOUT_SUCCESS } from 'redux/modules/user';
 
 // action constants
 const SHOW = 'bootstrap/themes/datepicker/SHOW';
@@ -51,6 +52,8 @@ reducerMap[SET_VIEW_MODE] = (initialState, action) =>
   initialState.withMutations(state => {
     state.viewMode = action.payload;
   });
+
+reducerMap[LOGOUT_SUCCESS] = () => INITIAL_STATE;
 
 export default handleActions(reducerMap, INITIAL_STATE);
 
