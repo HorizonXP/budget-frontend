@@ -13,13 +13,14 @@ import { syncHistoryWithStore } from 'react-router-redux';
 import { ReduxAsyncConnect, loadOnServer } from 'redux-async-connect';
 import bodyParser from 'body-parser';
 import qs from 'query-string';
-import { toJSON } from 'transit-immutable-js';
 import cookieParser from 'cookie-parser';
 import {Map} from 'immutable';
 import compression from 'compression';
 import path from 'path';
 import httpProxy from 'http-proxy';
 import Html from '../../src/helpers/Html';
+import { withRecords } from 'transit-immutable-js';
+import * as records from '../../src/redux/records';
 
 const app = new Express();
 const port = 3000;
@@ -90,7 +91,12 @@ app.use(function(req, res, next) {
           }
           res.cookie(key, req.cookies[key], options);
         }
-        res.send('<!doctype html>\n' + ReactDOM.renderToString(<Html assets={webpackIsomorphicTools.assets()} component={component} store={req.store}/>));
+        const recordsArray = [];
+        for (const k in records) {
+          recordsArray.push(records[k]);
+        }
+        const transit = withRecords(recordsArray);
+        res.send('<!doctype html>\n' + ReactDOM.renderToString(<Html assets={webpackIsomorphicTools.assets()} component={component} store={req.store} transit={transit} />));
       });
     } else {
       // 404

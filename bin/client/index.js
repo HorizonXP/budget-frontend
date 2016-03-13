@@ -9,11 +9,17 @@ import { syncHistoryWithStore } from 'react-router-redux';
 
 import createStore from '../../src/redux/store/createStore';
 import getRoutes from '../../src/routes';
-import { fromJSON } from 'transit-immutable-js';
+import { withRecords } from 'transit-immutable-js';
+import * as records from '../../src/redux/records';
 
 injectTapEventPlugin();
 
-const initialState = fromJSON(window.__data);
+const recordsArray = [];
+for (const k in records) {
+  recordsArray.push(records[k]);
+}
+const transit = withRecords(recordsArray);
+const initialState = transit.fromJSON(window.__data);
 
 const dest = document.getElementById('content');
 const store = createStore(browserHistory, null, initialState);

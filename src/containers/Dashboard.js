@@ -1,18 +1,22 @@
-/* eslint react/prop-types: [2, { ignore: ["store"] }] */
 import React from 'react';
 import { asyncConnect } from 'redux-async-connect';
+import { connect } from 'react-redux';
 import Divider from 'theme/components/Divider';
 import {
   setGroup,
   setTitle
 } from 'redux/modules/dashhead';
 
-const Dashboard = () => (
+const Dashboard = ({ family }) => (
   <div>
     <Divider className="m-t" />
-    <h1>Hey!</h1>;
+    <h1>Hey {family.name}!</h1>
   </div>
 );
+
+Dashboard.propTypes = {
+  family: React.PropTypes.object.isRequired
+};
 
 export default asyncConnect([{
   promise: ({ store }) => {
@@ -21,4 +25,11 @@ export default asyncConnect([{
     promises.push(store.dispatch(setTitle('Overview')));
     return Promise.all(promises);
   }
-}])(Dashboard);
+}])(
+connect(
+  state => (
+    {
+      family: state.family
+    }
+  ),
+)(Dashboard));

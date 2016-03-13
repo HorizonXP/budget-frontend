@@ -1,5 +1,7 @@
 import React from 'react';
 import { Grid, Row, Col } from 'react-bootstrap';
+import { asyncConnect } from 'redux-async-connect';
+import { load as loadFamily } from 'redux/modules/family';
 
 const SignedIn = ({ sidebar, dashhead, content }) => (
   <Grid>
@@ -23,4 +25,13 @@ SignedIn.propTypes = {
   content: React.PropTypes.node.isRequired
 };
 
-export default SignedIn;
+export default asyncConnect([{
+  promise: ({ store }) => {
+    const promises = [];
+    const state = store.getState();
+    if (state.family.loaded === false) {
+      promises.push(store.dispatch(loadFamily()));
+    }
+    return Promise.all(promises);
+  }
+}])(SignedIn);
