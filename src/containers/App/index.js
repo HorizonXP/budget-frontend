@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import Helmet from 'react-helmet';
 import { asyncConnect } from 'redux-async-connect';
-import { isLoaded as isAuthLoaded, load as loadAuth } from 'redux/modules/user.js';
+import { load as loadAuth } from 'redux/modules/user';
 
 const App = ({ children }) => (
   <div>
@@ -25,7 +25,7 @@ export default asyncConnect([{
   promise: ({ store: { dispatch, getState } }) => {
     const promises = [];
 
-    if (!isAuthLoaded(getState().user)) {
+    if (!getState().user.loaded) {
       promises.push(dispatch(loadAuth(true)));
     }
 

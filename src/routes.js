@@ -1,7 +1,7 @@
 import React from 'react';
 import { Route, IndexRoute } from 'react-router';
 import { App, SignedIn, SignedOut, Login, Dashboard, Taxes } from 'containers';
-import { isLoaded as isAuthLoaded, load as loadAuth } from 'redux/modules/user';
+import { load as loadAuth } from 'redux/modules/user';
 import Sidebar from 'components/sidebar';
 import DashHead from 'components/dashhead';
 
@@ -10,15 +10,14 @@ const Content = ({ children }) => children;
 export default store => {
   const requireAuth = (nextState, replace, cb) => {
     function checkAuth() {
-      const { user } = store.getState();
-      const loggedIn = user.has('loggedIn') ? user.get('loggedIn') : false;
+      const loggedIn = store.getState().user.loggedIn;
       if (!loggedIn) {
         replace({ pathname: '/login', state: { next: nextState.location.pathname } });
       }
       cb();
     }
 
-    if (!isAuthLoaded(store.getState().user)) {
+    if (!store.getState().user.loggedIn) {
       store.dispatch(loadAuth(true)).then(checkAuth);
     } else {
       checkAuth();

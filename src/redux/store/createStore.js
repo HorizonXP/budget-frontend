@@ -16,11 +16,11 @@ import { routerMiddleware } from 'react-router-redux';
 export default (history, cookies, data) => {
   const reduxRouterMiddleware = routerMiddleware(history);
   const apiPattern = /\/api\//;
-  const getToken = state => state.user.get('token');
+  const getToken = state => state.user.token;
   const getTokenVal = state => {
-    const tokenObj = state.user.get('token');
+    const tokenObj = state.user.token;
     if (tokenObj) {
-      return tokenObj.get('token');
+      return tokenObj.token;
     }
     return null;
   };
