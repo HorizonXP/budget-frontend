@@ -48,3 +48,22 @@ export const Member = new Record({
   provider: false
 }, 'Member');
 
+export const DashHeadState = new Record({
+  title: null,
+  group: null
+}, 'DashHeadState');
+
+export const DatepickerState = new Record({
+  shown: false,
+  startDate: new Date(),
+  endDate: null,
+  viewMode: 'calendar'
+}, 'DatepickerState');
+
+export const TaxesState = new Record({
+  activeTab: 'yours'
+}, 'TaxesState');
+
+export const SidebarState = new Record({
+  collapsed: false
+}, 'SidebarState');

@@ -1,5 +1,6 @@
-import { Map } from 'immutable';
+/* eslint-disable no-param-reassign */
 import { handleActions, createAction } from 'redux-actions';
+import { DatepickerState } from 'redux/records';
 
 // action constants
 const SHOW = 'bootstrap/themes/datepicker/SHOW';
@@ -17,48 +18,39 @@ export const setStartDate = createAction(SET_START_DATE);
 export const setEndDate = createAction(SET_END_DATE);
 export const setViewMode = createAction(SET_VIEW_MODE);
 
-const INITIAL_STATE = new Map({
-  shown: false,
-  startDate: new Date(),
-  endDate: null,
-  viewMode: 'calendar'
-});
-
-export function isShown(state) {
-  return state.get('shown');
-}
-
-export function getStartDate(state) {
-  return state.get('startDate');
-}
-
-export function getEndDate(state) {
-  return state.get('endDate');
-}
-
-export function getViewMode(state) {
-  return state.get('viewMode');
-}
+const INITIAL_STATE = new DatepickerState();
 
 const reducerMap = {};
 
-reducerMap[SHOW] = state =>
-  state.set('shown', true);
+reducerMap[SHOW] = initialState =>
+  initialState.withMutations(state => {
+    state.shown = true;
+  });
 
-reducerMap[HIDE] = state =>
-  state.set('shown', false);
+reducerMap[HIDE] = initialState =>
+  initialState.withMutations(state => {
+    state.shown = false;
+  });
 
-reducerMap[TOGGLE] = state =>
-  state.set('shown', !state.get('shown'));
+reducerMap[TOGGLE] = initialState =>
+  initialState.withMutations(state => {
+    state.shown = !state.shown;
+  });
 
-reducerMap[SET_START_DATE] = (state, action) =>
-  state.set('startDate', action.payload);
+reducerMap[SET_START_DATE] = (initialState, action) =>
+  initialState.withMutations(state => {
+    state.startDate = action.payload;
+  });
 
-reducerMap[SET_END_DATE] = (state, action) =>
-  state.set('endDate', action.payload);
+reducerMap[SET_END_DATE] = (initialState, action) =>
+  initialState.withMutations(state => {
+    state.endDate = action.payload;
+  });
 
-reducerMap[SET_VIEW_MODE] = (state, action) =>
-  state.set('viewMode', action.payload);
+reducerMap[SET_VIEW_MODE] = (initialState, action) =>
+  initialState.withMutations(state => {
+    state.viewMode = action.payload;
+  });
 
 export default handleActions(reducerMap, INITIAL_STATE);
 

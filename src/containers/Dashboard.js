@@ -7,10 +7,10 @@ import {
   setTitle
 } from 'redux/modules/dashhead';
 
-const Dashboard = ({ family }) => (
+const Dashboard = ({ family: { name } }) => (
   <div>
     <Divider className="m-t" />
-    <h1>Hey {family.name}!</h1>
+    <h1>Hey {name}!</h1>
   </div>
 );
 

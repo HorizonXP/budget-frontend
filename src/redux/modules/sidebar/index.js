@@ -1,5 +1,6 @@
-import { Map } from 'immutable';
+/* eslint-disable no-param-reassign */
 import { handleActions, createAction } from 'redux-actions';
+import { SidebarState } from 'redux/records';
 
 // action constants
 const SHOW = 'bootstrap/themes/sidebar/SHOW';
@@ -11,24 +12,24 @@ export const show = createAction(SHOW);
 export const hide = createAction(HIDE);
 export const toggle = createAction(TOGGLE);
 
-const INITIAL_STATE = new Map({
-  collapsed: false,
-});
-
-export function collapsed(state) {
-  return state.get('collapsed');
-}
+const INITIAL_STATE = new SidebarState();
 
 const reducerMap = {};
 
-reducerMap[SHOW] = state =>
-  state.set('collapsed', false);
+reducerMap[SHOW] = initialState =>
+  initialState.withMutations(state => {
+    state.collapsed = false;
+  });
 
-reducerMap[HIDE] = state =>
-  state.set('collapsed', true);
+reducerMap[HIDE] = initialState =>
+  initialState.withMutations(state => {
+    state.collapsed = true;
+  });
 
-reducerMap[TOGGLE] = state =>
-  state.set('collapsed', !state.get('collapsed'));
+reducerMap[TOGGLE] = initialState =>
+  initialState.withMutations(state => {
+    state.collapsed = !state.collapsed;
+  });
 
 export default handleActions(reducerMap, INITIAL_STATE);
 

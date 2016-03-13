@@ -8,53 +8,46 @@ import { connect } from 'react-redux';
 import {
   show,
   hide,
-  isShown,
   setStartDate,
-  getStartDate,
   setEndDate,
-  getEndDate,
   setViewMode,
-  getViewMode
 } from 'redux/modules/datepicker';
-import {
-  getGroup,
-  getTitle
-} from 'redux/modules/dashhead';
 
 const DashHeadComponent = ({
-  datepicker,
-  dashhead,
+  datepicker: {
+    startDate,
+    endDate,
+    shown,
+    viewMode
+  },
+  dashhead: {
+    group,
+    title
+  },
   ...props
-}) => {
-  const startDate = getStartDate(datepicker);
-  const endDate = getEndDate(datepicker);
-  const viewMode = getViewMode(datepicker);
-  const title = getTitle(dashhead);
-  const group = getGroup(dashhead);
-  return (
-    <DashHead>
-      <DashHeadTitles>
-        <h1 className="h6 dashhead-subtitle">{group}</h1>
-        <h2 className="h2 dashhead-title">{title}</h2>
-      </DashHeadTitles>
-      <ButtonToolbar className="dashhead-toolbar">
-        <ButtonToolbarItem>
-          <DatePicker
-            onFocus={props.show}
-            onBlur={props.hide}
-            show={isShown(datepicker)}
-            setStartDate={props.setStartDate}
-            setEndDate={props.setEndDate}
-            startDate={startDate}
-            endDate={endDate}
-            setViewMode={props.setViewMode}
-            viewMode={viewMode}
-          />
-        </ButtonToolbarItem>
-      </ButtonToolbar>
-    </DashHead>
-  );
-};
+}) => (
+  <DashHead>
+    <DashHeadTitles>
+      <h1 className="h6 dashhead-subtitle">{group}</h1>
+      <h2 className="h2 dashhead-title">{title}</h2>
+    </DashHeadTitles>
+    <ButtonToolbar className="dashhead-toolbar">
+      <ButtonToolbarItem>
+        <DatePicker
+          onFocus={props.show}
+          onBlur={props.hide}
+          show={shown}
+          setStartDate={props.setStartDate}
+          setEndDate={props.setEndDate}
+          startDate={startDate}
+          endDate={endDate}
+          setViewMode={props.setViewMode}
+          viewMode={viewMode}
+        />
+      </ButtonToolbarItem>
+    </ButtonToolbar>
+  </DashHead>
+);
 
 DashHeadComponent.propTypes = {
   datepicker: React.PropTypes.object.isRequired,
