@@ -253,7 +253,7 @@ export default class DividerTabs extends React.Component {
     const childPanes = ValidComponentChildren.map(children, this.renderPane);
     return (
       <div>
-        <div className="hr-divider">
+        <div className={`${props.className} hr-divider`}>
           <Nav {...tabsProps}>
             {childTabs}
           </Nav>
