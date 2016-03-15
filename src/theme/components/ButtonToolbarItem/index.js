@@ -1,7 +1,8 @@
 import React from 'react';
+import classnames from 'classnames';
 
 const ButtonToolbarItem = ({ children, className }) =>
-  <div className={`btn-toolbar-item ${className}`}>{children}</div>;
+  <div className={classnames(className, 'btn-toolbar-item')}>{children}</div>;
 
 ButtonToolbarItem.propTypes = {
   children: React.PropTypes.node.isRequired,
