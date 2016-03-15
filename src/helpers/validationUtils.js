@@ -41,6 +41,15 @@ export function getValidationErrorProperties(field, ignoreTouch) {
 }
 
 export function validateProfileEditor(values) {
+  const newValues = {};
+  Object.keys(values).map(key => {
+    if (values[key] === null || values[key] === undefined) {
+      newValues[key] = '';
+    } else {
+      newValues[key] = values[key];
+    }
+    return null;
+  });
   const constraints = {
     first_name: {
       required: 'Please enter your first name.'
@@ -52,32 +61,36 @@ export function validateProfileEditor(values) {
       required: 'Please enter your e-mail address.',
       isEmail: 'Please enter a valid e-mail address.'
     },
+    username: {
+      required: 'Please enter your username.',
+      isAlphanumeric: 'Please enter a valid username.'
+    },
     current_password: {
       hasCurrentPassword: {
-        args: [values.new_password1, values.new_password2],
+        args: [newValues.new_password1, newValues.new_password2],
         msg: 'You must enter your current password before you can change it.'
       },
     }
   };
-  if (values.current_password) {
+  if (newValues.current_password) {
     constraints.new_password1 = {
       isLength: {
         args: [6],
         msg: 'Your new password must be 6 characters or longer.'
       },
       notEquals: {
-        args: [values.current_password],
+        args: [newValues.current_password],
         msg: 'Your new password has to be different from your existing password.'
       }
     };
     constraints.new_password2 = {
       equals: {
-        args: [values.new_password1],
+        args: [newValues.new_password1],
         msg: 'Your new password entries do not match.'
       }
     };
   }
-  return checkConstraints(values, constraints);
+  return checkConstraints(newValues, constraints);
 }
 
 export function validateLogin(values) {

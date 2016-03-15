@@ -13,18 +13,23 @@ export const UserState = new Record({
 
   loggedIn: false,
   loggingIn: false,
-  loggingOut: false,
   loginError: null,
+
+  loggingOut: false,
   logoutError: null,
 
   refreshingToken: false,
   refreshTokenError: null,
 
+  updating: false,
+  updated: false,
+  updateError: null,
+
   id: null,
   username: null,
   email: null,
-  firstName: null,
-  lastName: null,
+  first_name: null,
+  last_name: null,
 
   token: new Token()
 }, 'UserState');
@@ -67,3 +72,7 @@ export const TaxesState = new Record({
 export const SidebarState = new Record({
   collapsed: false
 }, 'SidebarState');
+
+export const SettingsState = new Record({
+  activeTab: null
+}, 'SettingsState');

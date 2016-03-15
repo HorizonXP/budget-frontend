@@ -5,3 +5,4 @@ export SignedIn from './SignedIn';
 export SignedOut from './SignedOut';
 export Taxes from './Taxes';
 export Logout from './Logout';
+export Settings from './Settings';

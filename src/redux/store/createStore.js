@@ -11,6 +11,7 @@ import multi from 'redux-multi';
 import apiUrl from 'redux/middleware/apiUrlMiddleware';
 import checkAuth from 'redux/middleware/checkAuth';
 import thunk from 'redux-thunk';
+import timeout from 'redux-effects-timeout';
 import { routerMiddleware } from 'react-router-redux';
 
 export default (history, cookies, data) => {
@@ -29,6 +30,7 @@ export default (history, cookies, data) => {
     multi,
     effects,
     thunk,
+    timeout(),
     apiUrl(apiPattern),
     headers(apiPattern),
     bearer(apiPattern, getTokenVal),
@@ -38,6 +40,7 @@ export default (history, cookies, data) => {
     cookie(cookies),
     reduxRouterMiddleware,
   ];
+
   const finalCreateStore = applyMiddleware(...middleware)(_createStore);
 
   const store = finalCreateStore(reducer, data);

@@ -4,6 +4,7 @@ import { handleActions, createAction } from 'redux-actions';
 import parseToken from 'helpers/parseToken';
 import { bind } from 'redux-effects';
 import { cookie } from 'redux-effects-cookie';
+import { timeout } from 'redux-effects-timeout';
 import ApiClient from 'helpers/ApiClient';
 import { UserState, Token } from 'redux/records';
 
@@ -20,11 +21,16 @@ const LOGOUT = 'budget/user/LOGOUT';
 const LOGOUT_SUCCESS = 'budget/user/LOGOUT_SUCCESS';
 const LOGOUT_FAILURE = 'budget/user/LOGOUT_FAILURE';
 
+const UPDATE = 'budget/user/UPDATE';
+const UPDATE_SUCCESS = 'budget/user/UPDATE_SUCCESS';
+const UPDATE_FAILURE = 'budget/user/UPDATE_FAILURE';
+
 const REFRESH_TOKEN = 'budget/user/REFRESH_TOKEN';
 const REFRESH_TOKEN_SUCCESS = 'budget/user/REFRESH_TOKEN_SUCCESS';
 const REFRESH_TOKEN_FAILURE = 'budget/user/REFRESH_TOKEN_FAILURE';
 
 const SET_TOKEN = 'budget/user/SET_TOKEN';
+const SET_UPDATED = 'budget/user/SET_UPDATED';
 
 // action creators
 const loadUser = createAction(LOAD);
@@ -38,11 +44,16 @@ const loginUserFailure = createAction(LOGIN_FAILURE);
 const logoutUser = createAction(LOGOUT);
 const logoutUserSuccess = createAction(LOGOUT_SUCCESS);
 
+const updateUser = createAction(UPDATE);
+const updateUserSuccess = createAction(UPDATE_SUCCESS);
+const updateUserFailure = createAction(UPDATE_FAILURE);
+
 const refreshToken = createAction(REFRESH_TOKEN);
 const refreshTokenSuccess = createAction(REFRESH_TOKEN_SUCCESS);
 const refreshTokenFailure = createAction(REFRESH_TOKEN_FAILURE);
 
 const setToken = createAction(SET_TOKEN);
+const setUpdated = createAction(SET_UPDATED);
 
 function accessTokenCookie(token) {
   if (token !== undefined) {
@@ -115,18 +126,48 @@ export function login(username, password, callback) {
       }),
       ({ value }) => bind(
         accessTokenCookie(value.token),
-        () => bind(
-          loginUserSuccess(value),
-          () => typeof callback === 'function' ? callback(Promise.resolve(value)) : null
-        )
+        () => {
+          if (typeof callback === 'function') {
+            callback(Promise.resolve(value));
+          }
+          return loginUserSuccess(value);
+        }
       ),
       ({ value }) => bind(
         accessTokenCookie(null),
-        () => bind(
-          loginUserFailure(value),
-          () => typeof callback === 'function' ? callback(Promise.reject(value)) : null
-        )
+        () => {
+          if (typeof callback === 'function') {
+            callback(Promise.reject(value));
+          }
+          return loginUserFailure(value);
+        }
       )
+    )
+  ];
+}
+
+export function update(user, callback) {
+  return [
+    updateUser(),
+    bind(
+      ApiClient.put('/v1/accounts/current/', {
+        data: { ...user }
+      }),
+      ({ value }) => {
+        if (typeof callback === 'function') {
+          callback(Promise.resolve(value));
+        }
+        return bind(
+          updateUserSuccess(value),
+          () => timeout(() => setUpdated(false), 3000)
+        );
+      },
+      ({ value }) => {
+        if (typeof callback === 'function') {
+          callback(Promise.reject(value));
+        }
+        return updateUserFailure(value);
+      }
     )
   ];
 }
@@ -148,6 +189,7 @@ function clearErrors(initialState) {
   initialState.loginError = null;
   initialState.logoutError = null;
   initialState.refreshTokenError = null;
+  initialState.updateError = null;
 }
 
 const reducerMap = {};
@@ -174,8 +216,8 @@ reducerMap[LOAD_SUCCESS] = (initialState, action) =>
     state.id = id;
     state.username = username;
     state.email = email;
-    state.firstName = first_name;
-    state.lastName = last_name;
+    state.first_name = first_name;
+    state.last_name = last_name;
   });
 
 reducerMap[LOAD_FAILURE] = (initialState, action) =>
@@ -187,8 +229,8 @@ reducerMap[LOAD_FAILURE] = (initialState, action) =>
     state.id = null;
     state.username = null;
     state.email = null;
-    state.firstName = null;
-    state.lastName = null;
+    state.first_name = null;
+    state.last_name = null;
   });
 
 reducerMap[LOGIN] = initialState =>
@@ -217,8 +259,8 @@ reducerMap[LOGIN_SUCCESS] = (initialState, action) =>
     state.id = id;
     state.username = username;
     state.email = email;
-    state.firstName = first_name;
-    state.lastName = last_name;
+    state.first_name = first_name;
+    state.last_name = last_name;
     state.token = new Token({ ...parsedToken });
   });
 
@@ -231,8 +273,8 @@ reducerMap[LOGIN_FAILURE] = (initialState, action) =>
     state.id = null;
     state.username = null;
     state.email = null;
-    state.firstName = null;
-    state.lastName = null;
+    state.first_name = null;
+    state.last_name = null;
     state.token = new Token();
   });
 
@@ -251,8 +293,8 @@ reducerMap[LOGOUT_SUCCESS] = initialState =>
     state.id = null;
     state.username = null;
     state.email = null;
-    state.firstName = null;
-    state.lastName = null;
+    state.first_name = null;
+    state.last_name = null;
     state.token = new Token();
   });
 
@@ -286,8 +328,8 @@ reducerMap[REFRESH_TOKEN_SUCCESS] = (initialState, action) =>
     state.id = id;
     state.username = username;
     state.email = email;
-    state.firstName = first_name;
-    state.lastName = last_name;
+    state.first_name = first_name;
+    state.last_name = last_name;
     state.token = new Token({ ...parsedToken });
   });
 
@@ -303,6 +345,44 @@ reducerMap[SET_TOKEN] = (initialState, action) =>
       const parsedToken = parseToken(action.payload);
       state.token = new Token({ ...parsedToken });
     }
+  });
+
+reducerMap[UPDATE] = initialState =>
+  initialState.withMutations(state => {
+    clearErrors(state);
+    state.updating = true;
+    state.updated = false;
+  });
+
+reducerMap[UPDATE_SUCCESS] = (initialState, action) =>
+  initialState.withMutations(state => {
+    const {
+      id,
+      username,
+      email,
+      first_name,
+      last_name
+    } = action.payload;
+    state.updateError = null;
+    state.updating = false;
+    state.updated = true;
+    state.id = id;
+    state.username = username;
+    state.email = email;
+    state.first_name = first_name;
+    state.last_name = last_name;
+  });
+
+reducerMap[UPDATE_FAILURE] = (initialState, action) =>
+  initialState.withMutations(state => {
+    state.updateError = action.payload;
+    state.updating = false;
+    state.updated = false;
+  });
+
+reducerMap[SET_UPDATED] = (initialState, action) =>
+  initialState.withMutations(state => {
+    state.updated = action.payload;
   });
 
 export default handleActions(reducerMap, INITIAL_STATE);
