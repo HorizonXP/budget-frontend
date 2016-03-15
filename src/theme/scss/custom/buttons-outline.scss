@@ -19,3 +19,22 @@
 .btn-danger-outline {
   @include button-outline-variant($btn-danger-border);
 }
+
+.btn-outline-default {
+  @include button-outline-variant($btn-default-color);
+}
+.btn-outline-primary {
+  @include button-outline-variant($btn-primary-border);
+}
+.btn-outline-success {
+  @include button-outline-variant($btn-success-border);
+}
+.btn-outline-info{
+  @include button-outline-variant($btn-info-border);
+}
+.btn-outline-warning {
+  @include button-outline-variant($btn-warning-border);
+}
+.btn-outline-danger {
+  @include button-outline-variant($btn-danger-border);
+}

@@ -10,7 +10,7 @@
   &:hover,
   &:active,
   &.active,
-  .open > .dropdown-toggle& {
+  .open > &.dropdown-toggle {
     color: $activeTextColor;
     background-color: $color;
     box-shadow: none;

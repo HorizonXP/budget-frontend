@@ -29,6 +29,7 @@
     "bootstrap-sass": "^3.3.6",
     "chai": "^3.5.0",
     "chai-immutable": "^1.5.3",
+    "classnames": "^2.2.3",
     "clean-webpack-plugin": "^0.1.8",
     "compression": "^1.6.1",
     "cookie-parser": "^1.4.1",
