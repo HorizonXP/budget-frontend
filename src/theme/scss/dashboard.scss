@@ -85,3 +85,13 @@ body {
   font-weight: 900;
   src: local('Roboto Black Italic'), local('Roboto-BlackItalic'), url(~/../fonts/Roboto/Roboto-Black-Italic.ttf) format('truetype');
 }
+
+.flextable-item {
+  .btn-group {
+    > .btn {
+      + .btn {
+        margin-left: -1px;
+      }
+    }
+  }
+}
