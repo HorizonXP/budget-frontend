@@ -58,7 +58,7 @@ const TaxesDashboard = ({
         onSelect={props.setActiveTab}
         className="m-b"
       >
-        { members.map(member => (
+        { members.filter(member => member.provider).map(member => (
             <Tab eventKey={member.username} title={member.first_name}>
               <Row>
                 <Col xs={12} md={6}>
