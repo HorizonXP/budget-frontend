@@ -1,4 +1,5 @@
 import { Set, Record } from 'immutable';
+import moment from 'moment';
 
 export const Token = new Record({
   token: null,
@@ -55,15 +56,9 @@ export const Member = new Record({
 
 export const DashHeadState = new Record({
   title: null,
-  group: null
+  group: null,
+  startDate: moment().format('DD/MM/YYYY'),
 }, 'DashHeadState');
-
-export const DatepickerState = new Record({
-  shown: false,
-  startDate: new Date(),
-  endDate: null,
-  viewMode: 'calendar'
-}, 'DatepickerState');
 
 export const TaxesState = new Record({
   activeTab: null

@@ -5,24 +5,13 @@ import ButtonToolbarItem from 'theme/components/ButtonToolbarItem';
 import { ButtonToolbar } from 'react-bootstrap';
 import DatePicker from 'theme/components/DatePicker';
 import { connect } from 'react-redux';
-import {
-  show,
-  hide,
-  setStartDate,
-  setEndDate,
-  setViewMode,
-} from 'redux/modules/datepicker';
+import { setStartDate } from 'redux/modules/dashhead';
 
 const DashHeadComponent = ({
-  datepicker: {
-    startDate,
-    endDate,
-    shown,
-    viewMode
-  },
   dashhead: {
     group,
-    title
+    title,
+    startDate
   },
   ...props
 }) => (
@@ -34,15 +23,8 @@ const DashHeadComponent = ({
     <ButtonToolbar className="dashhead-toolbar">
       <ButtonToolbarItem>
         <DatePicker
-          onFocus={props.show}
-          onBlur={props.hide}
-          show={shown}
-          setStartDate={props.setStartDate}
-          setEndDate={props.setEndDate}
           startDate={startDate}
-          endDate={endDate}
-          setViewMode={props.setViewMode}
-          viewMode={viewMode}
+          onChange={props.setStartDate}
         />
       </ButtonToolbarItem>
     </ButtonToolbar>
@@ -50,27 +32,17 @@ const DashHeadComponent = ({
 );
 
 DashHeadComponent.propTypes = {
-  datepicker: React.PropTypes.object.isRequired,
   dashhead: React.PropTypes.object.isRequired,
-  show: React.PropTypes.func.isRequired,
-  hide: React.PropTypes.func.isRequired,
-  setStartDate: React.PropTypes.func.isRequired,
-  setEndDate: React.PropTypes.func.isRequired,
-  setViewMode: React.PropTypes.func.isRequired
+  setStartDate: React.PropTypes.func.isRequired
 };
 
 export default connect(
   state => (
     {
-      datepicker: state.datepicker,
       dashhead: state.dashhead
     }
   ),
   {
-    show,
-    hide,
     setStartDate,
-    setEndDate,
-    setViewMode
   }
 )(DashHeadComponent);

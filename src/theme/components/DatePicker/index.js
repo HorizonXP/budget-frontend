@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Overlay, Table } from 'react-bootstrap';
+import { Overlay, Input, Table, Glyphicon } from 'react-bootstrap';
 import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 import { throttle } from 'underscore';
 import moment from 'moment';
@@ -133,20 +133,30 @@ function endOfDecade(date) {
 
 export default class DatePicker extends React.Component {
   static propTypes = {
-    onFocus: React.PropTypes.func.isRequired,
-    onBlur: React.PropTypes.func.isRequired,
-    show: React.PropTypes.bool.isRequired,
-    setStartDate: React.PropTypes.func.isRequired,
-    setEndDate: React.PropTypes.func.isRequired,
-    setViewMode: React.PropTypes.func.isRequired,
-    startDate: React.PropTypes.object.isRequired,
+    onBlur: React.PropTypes.func,
+    onChange: React.PropTypes.func,
+    onFocus: React.PropTypes.func,
+    startDate: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.object]),
+    ref: React.PropTypes.string,
+    label: React.PropTypes.string,
+    name: React.PropTypes.string,
     endDate: React.PropTypes.object,
-    viewMode: React.PropTypes.string.isRequired
+    bsStyle: React.PropTypes.string,
+    error: React.PropTypes.string,
+    hasFeedback: React.PropTypes.bool,
+    help: React.PropTypes.string
   }
 
-  state = {
-    allowBlur: true,
-    value: null
+  constructor(props) {
+    super(props);
+    this.state = {
+      allowBlur: true,
+      show: false,
+      viewMode: 'calendar',
+      startDate: props.startDate,
+      endDate: props.endDate,
+      value: props.startDate
+    };
   }
 
   componentDidMount() {
@@ -169,9 +179,23 @@ export default class DatePicker extends React.Component {
     }
   }, 500)
 
-  maybeBlur = e => {
+  maybeBlur = () => {
     if (this.state.allowBlur) {
-      this.props.onBlur(e);
+      this.setState({
+        show: false
+      });
+      if (typeof this.props.onBlur === 'function') {
+        this.props.onBlur(this.state.startDate);
+      }
+    }
+  }
+
+  maybeFocus = () => {
+    this.setState({
+      show: true
+    });
+    if (typeof this.props.onFocus === 'function') {
+      this.props.onFocus(this.state.startDate);
     }
   }
 
@@ -182,7 +206,7 @@ export default class DatePicker extends React.Component {
   }
 
   maybeBlurClick = e => {
-    const parent = ReactDOM.findDOMNode(this.refs.datepicker);
+    const parent = ReactDOM.findDOMNode(this.refs.target);
     if (!parent.contains(e.target)) {
       this.maybeBlur(e);
       this.allowBlur();
@@ -196,48 +220,62 @@ export default class DatePicker extends React.Component {
   }
 
   handleChange = e => {
-    const date = moment(e.target.value, 'DD/MM/YYYY');
-    this.props.setStartDate(date.toDate());
+    const date = e.target.value;
     this.setState({
-      value: e.target.value
+      startDate: date,
+      value: date
     });
+    if (typeof this.props.onChange === 'function') {
+      this.props.onChange(date);
+    }
+  }
+
+  renderIcon = () => {
+    if (this.props.hasFeedback) {
+      switch (this.props.bsStyle) {
+        case 'success': return <Glyphicon formControlFeedback glyph="ok" key="icon" />;
+        case 'warning': return <Glyphicon formControlFeedback glyph="warning-sign" key="icon" />;
+        case 'error': return <Glyphicon formControlFeedback glyph="remove" key="icon" />;
+        default: return <span className="form-control-feedback" key="icon" />;
+      }
+    } else {
+      return null;
+    }
   }
 
   render() {
     const {
-      onFocus,
       show,
       startDate,
-      viewMode
-    } = this.props;
+      viewMode,
+      value
+    } = this.state;
     const css = require('./DatePicker.scss');
     const baseCls = 'datepicker datepicker-dropdown dropdown-menu'
       + ' datepicker-orient-left datepicker-orient-top';
     const targetFunc = () => ReactDOM.findDOMNode(this.refs.target);
-    const currentDate = moment(startDate);
-    const currentDateStr = currentDate.format('DD/MM/YYYY');
-    const value = this.state.value === null
-      ? currentDateStr
-      : this.state.value;
-    const calendar = getCalendar(currentDate.get('year'), currentDate.get('month'));
-    const months = getMonths(currentDate.get('year'));
-    const years = getYears(currentDate.get('year'));
+    const startDateMoment = moment(startDate, 'DD/MM/YYYY');
+    const calendar = getCalendar(startDateMoment.get('year'), startDateMoment.get('month'));
+    const months = getMonths(startDateMoment.get('year'));
+    const years = getYears(startDateMoment.get('year'));
     const setStateAndDate = (date, setAllowBlur, newViewMode) => {
+      const dateStr = date.format('DD/MM/YYYY');
       this.setState({
         allowBlur: !setAllowBlur,
-        value: date.format('DD/MM/YYYY')
+        startDate: dateStr,
+        value: dateStr,
+        viewMode: newViewMode
       });
-      this.props.setStartDate(date.toDate());
-      if (newViewMode !== undefined) {
-        this.props.setViewMode(newViewMode);
+      if (typeof this.props.onChange === 'function') {
+        this.props.onChange(dateStr);
       }
     };
-    const nextMonth = () => setStateAndDate(moment(currentDate).add(1, 'month'), false);
-    const prevMonth = () => setStateAndDate(moment(currentDate).subtract(1, 'month'), false);
-    const nextYear = () => setStateAndDate(moment(currentDate).add(1, 'year'), false);
-    const prevYear = () => setStateAndDate(moment(currentDate).subtract(1, 'year'), false);
-    const nextDecade = () => setStateAndDate(moment(currentDate).add(10, 'year'), false);
-    const prevDecade = () => setStateAndDate(moment(currentDate).subtract(10, 'year'), false);
+    const nextMonth = () => setStateAndDate(moment(startDateMoment).add(1, 'month'), false);
+    const prevMonth = () => setStateAndDate(moment(startDateMoment).subtract(1, 'month'), false);
+    const nextYear = () => setStateAndDate(moment(startDateMoment).add(1, 'year'), false);
+    const prevYear = () => setStateAndDate(moment(startDateMoment).subtract(1, 'year'), false);
+    const nextDecade = () => setStateAndDate(moment(startDateMoment).add(10, 'year'), false);
+    const prevDecade = () => setStateAndDate(moment(startDateMoment).subtract(10, 'year'), false);
     const next = () => {
       if (viewMode === 'calendar') {
         nextMonth();
@@ -263,28 +301,39 @@ export default class DatePicker extends React.Component {
       } else if (viewMode === 'month') {
         newViewMode = 'year';
       }
-      setStateAndDate(currentDate, true, newViewMode);
+      setStateAndDate(startDateMoment, true, newViewMode);
     };
     return (
-      <span
-        className="input-with-icon"
-        ref="datepicker"
-      >
-        <input
-          type="text"
-          value={value}
-          className="form-control"
-          ref="target"
-          onFocus={onFocus}
-          onBlur={this.maybeBlur}
-          onChange={this.handleChange}
-        />
-        <span className="icon icon-calendar" />
+      <div>
+        <Input
+          label={this.props.label}
+          bsStyle={this.props.bsStyle}
+          help={this.props.help}
+        >
+          <div>
+            <span
+              className="input-with-icon"
+              ref="target"
+            >
+              <input
+                type="text"
+                value={value}
+                className="form-control"
+                onFocus={this.maybeFocus}
+                onBlur={this.maybeBlur}
+                onChange={this.handleChange}
+                name={this.props.name}
+              />
+              <span className="icon icon-calendar" />
+              { this.renderIcon() }
+            </span>
+          </div>
+        </Input>
         <Overlay
-          target={targetFunc}
           show={show}
           placement="bottom"
-          container={this}
+          container={targetFunc}
+          target={targetFunc}
           shouldUpdatePosition
         >
           <div
@@ -307,10 +356,11 @@ export default class DatePicker extends React.Component {
                       className="datepicker-switch"
                       onClick={switchViewMode}
                     >
-                      { viewMode === 'calendar' && currentDate.format('MMMM YYYY') }
-                      { viewMode === 'month' && currentDate.format('YYYY') }
+                      { viewMode === 'calendar' && startDateMoment.format('MMMM YYYY') }
+                      { viewMode === 'month' && startDateMoment.format('YYYY') }
                       { viewMode === 'year' &&
-                        `${startOfDecade(currentDate).year()}-${endOfDecade(currentDate).year()}`
+                        `${startOfDecade(startDateMoment).year()}` +
+                          `-${endOfDecade(startDateMoment).year()}`
                       }
                     </th>
                     <th
@@ -332,7 +382,7 @@ export default class DatePicker extends React.Component {
                         const date = day.date;
                         const key = date.format('DD/MM/YYYY');
                         const str = date.format('D');
-                        const active = currentDate.isSame(date, 'day');
+                        const active = startDateMoment.isSame(date, 'day');
                         const cls = day.old ? ' old' : '';
                         const activeCls = active ? ' active' : '';
                         const setActive = () => setStateAndDate(date, day.old, 'calendar');
@@ -354,9 +404,9 @@ export default class DatePicker extends React.Component {
                         { months.map(month => {
                           const { date, label } = month;
                           const key = date.format('DD/MM/YYYY');
-                          const active = currentDate.isSame(date, 'month');
+                          const active = startDateMoment.isSame(date, 'month');
                           const activeCls = active ? ' active' : '';
-                          const newDate = moment(currentDate).set('month', date.month());
+                          const newDate = moment(startDateMoment).set('month', date.month());
                           const setActive = () => setStateAndDate(newDate, true, 'calendar');
                           return (
                             <span
@@ -377,9 +427,9 @@ export default class DatePicker extends React.Component {
                         { years.map(year => {
                           const { date, label, old } = year;
                           const key = date.format('DD/MM/YYYY');
-                          const active = currentDate.isSame(date, 'year');
+                          const active = startDateMoment.isSame(date, 'year');
                           const activeCls = active ? ' active' : '';
-                          const newDate = moment(currentDate).set('year', date.year());
+                          const newDate = moment(startDateMoment).set('year', date.year());
                           const setActive = () => setStateAndDate(newDate, true, 'month');
                           const cls = old ? ' old' : '';
                           return (
@@ -400,7 +450,7 @@ export default class DatePicker extends React.Component {
             </div>
           </div>
         </Overlay>
-      </span>
+      </div>
     );
   }
 }
