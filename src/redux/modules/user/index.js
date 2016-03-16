@@ -192,6 +192,45 @@ function clearErrors(initialState) {
   initialState.updateError = null;
 }
 
+function mergeUser(state, user) {
+  const {
+    id,
+    username,
+    email,
+    first_name,
+    last_name,
+    birthday
+  } = user;
+  state.merge({
+    id,
+    username,
+    email,
+    first_name,
+    last_name,
+    birthday
+  });
+}
+
+function mergeToken(state, token) {
+  const parsedToken = parseToken(token);
+  state.token = new Token({ ...parsedToken });
+}
+
+function clearUser(state) {
+  mergeUser(state, {
+    id: null,
+    username: null,
+    email: null,
+    first_name: null,
+    last_name: null,
+    birthday: null
+  });
+}
+
+function clearToken(state) {
+  state.token = new Token();
+}
+
 const reducerMap = {};
 
 reducerMap[LOAD] = initialState =>
@@ -202,22 +241,11 @@ reducerMap[LOAD] = initialState =>
 
 reducerMap[LOAD_SUCCESS] = (initialState, action) =>
   initialState.withMutations(state => {
-    const {
-      id,
-      username,
-      email,
-      first_name,
-      last_name
-    } = action.payload;
     state.loadError = null;
     state.loading = false;
     state.loaded = true;
     state.loggedIn = true;
-    state.id = id;
-    state.username = username;
-    state.email = email;
-    state.first_name = first_name;
-    state.last_name = last_name;
+    mergeUser(state, action.payload);
   });
 
 reducerMap[LOAD_FAILURE] = (initialState, action) =>
@@ -226,11 +254,7 @@ reducerMap[LOAD_FAILURE] = (initialState, action) =>
     state.loading = false;
     state.loaded = false;
     state.loggedIn = false;
-    state.id = null;
-    state.username = null;
-    state.email = null;
-    state.first_name = null;
-    state.last_name = null;
+    clearUser(state);
   });
 
 reducerMap[LOGIN] = initialState =>
@@ -242,26 +266,15 @@ reducerMap[LOGIN] = initialState =>
 reducerMap[LOGIN_SUCCESS] = (initialState, action) =>
   initialState.withMutations(state => {
     const {
-      user: {
-        id,
-        username,
-        email,
-        first_name,
-        last_name
-      },
+      user,
       token
     } = action.payload;
-    const parsedToken = parseToken(token);
     state.loginError = null;
     state.loggingIn = false;
     state.loaded = true;
     state.loggedIn = true;
-    state.id = id;
-    state.username = username;
-    state.email = email;
-    state.first_name = first_name;
-    state.last_name = last_name;
-    state.token = new Token({ ...parsedToken });
+    mergeUser(state, user);
+    mergeToken(state, token);
   });
 
 reducerMap[LOGIN_FAILURE] = (initialState, action) =>
@@ -270,12 +283,8 @@ reducerMap[LOGIN_FAILURE] = (initialState, action) =>
     state.loggingIn = false;
     state.loaded = false;
     state.loggedIn = false;
-    state.id = null;
-    state.username = null;
-    state.email = null;
-    state.first_name = null;
-    state.last_name = null;
-    state.token = new Token();
+    clearUser(state);
+    clearToken(state);
   });
 
 reducerMap[LOGOUT] = initialState =>
@@ -290,12 +299,8 @@ reducerMap[LOGOUT_SUCCESS] = initialState =>
     state.loggingOut = false;
     state.loaded = false;
     state.loggedIn = false;
-    state.id = null;
-    state.username = null;
-    state.email = null;
-    state.first_name = null;
-    state.last_name = null;
-    state.token = new Token();
+    clearUser(state);
+    clearToken(state);
   });
 
 reducerMap[LOGOUT_FAILURE] = (initialState, action) =>
@@ -313,24 +318,13 @@ reducerMap[REFRESH_TOKEN] = initialState =>
 reducerMap[REFRESH_TOKEN_SUCCESS] = (initialState, action) =>
   initialState.withMutations(state => {
     const {
-      user: {
-        id,
-        username,
-        email,
-        first_name,
-        last_name
-      },
+      user,
       token
     } = action.payload;
-    const parsedToken = parseToken(token);
     state.refreshTokenError = null;
     state.refreshingToken = false;
-    state.id = id;
-    state.username = username;
-    state.email = email;
-    state.first_name = first_name;
-    state.last_name = last_name;
-    state.token = new Token({ ...parsedToken });
+    mergeUser(state, user);
+    mergeToken(state, token);
   });
 
 reducerMap[REFRESH_TOKEN_FAILURE] = (initialState, action) =>
@@ -342,8 +336,7 @@ reducerMap[REFRESH_TOKEN_FAILURE] = (initialState, action) =>
 reducerMap[SET_TOKEN] = (initialState, action) =>
   initialState.withMutations(state => {
     if (action.payload !== undefined) {
-      const parsedToken = parseToken(action.payload);
-      state.token = new Token({ ...parsedToken });
+      mergeToken(state, action.payload);
     }
   });
 
@@ -356,21 +349,10 @@ reducerMap[UPDATE] = initialState =>
 
 reducerMap[UPDATE_SUCCESS] = (initialState, action) =>
   initialState.withMutations(state => {
-    const {
-      id,
-      username,
-      email,
-      first_name,
-      last_name
-    } = action.payload;
     state.updateError = null;
     state.updating = false;
     state.updated = true;
-    state.id = id;
-    state.username = username;
-    state.email = email;
-    state.first_name = first_name;
-    state.last_name = last_name;
+    mergeUser(state, action.payload);
   });
 
 reducerMap[UPDATE_FAILURE] = (initialState, action) =>

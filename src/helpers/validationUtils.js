@@ -1,6 +1,7 @@
 /* eslint camelcase: 0 */
 /* eslint array-callback-return: 0 */
 import validator from 'validator';
+import moment from 'moment';
 
 validator.required = val => !validator.isNull(val);
 validator.notEquals = (str, comparison) => !validator.equals(str, comparison);
@@ -48,6 +49,9 @@ export function validateProfileEditor(values) {
     } else {
       newValues[key] = values[key];
     }
+    if (key === 'birthday') {
+      newValues[key] = moment(newValues[key], 'DD/MM/YYYY').format();
+    }
     return null;
   });
   const constraints = {
@@ -64,6 +68,10 @@ export function validateProfileEditor(values) {
     username: {
       required: 'Please enter your username.',
       isAlphanumeric: 'Please enter a valid username.'
+    },
+    birthday: {
+      required: 'Please enter your birthday.',
+      isDate: 'Please enter a valid date for your birthday.'
     },
     current_password: {
       hasCurrentPassword: {

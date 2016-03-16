@@ -31,6 +31,7 @@ export const UserState = new Record({
   email: null,
   first_name: null,
   last_name: null,
+  birthday: null,
 
   token: new Token()
 }, 'UserState');
@@ -50,6 +51,7 @@ export const Member = new Record({
   first_name: null,
   last_name: null,
   email: null,
+  birthday: null,
   dependent: false,
   provider: false
 }, 'Member');
